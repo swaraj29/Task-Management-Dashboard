@@ -7,8 +7,8 @@ const initialState = {
       title: "Brainstorming",
       description: "Brainstorming brings team members' diverse experience into play.",
       status: "todo",
-      priority: "Low",
-      dueDate: "2025-06-08", // Added dueDate
+      priority: "Low", // Make sure these match the filter options exactly
+      dueDate: "2025-06-08",
       comments: 12,
       files: 0,
       assignees: [

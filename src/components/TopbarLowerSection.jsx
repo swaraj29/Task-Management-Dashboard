@@ -1,15 +1,29 @@
 import React, { useState } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux"; // Add useDispatch
 import { Filter, Calendar, Share2, Plus } from "lucide-react";
+import { setFilter, clearFilter } from "../redux/tasksSlice"; // Import actions
 import LinkIcon from "../assets/Images/Link.svg";
 import ArrowSquareIcon from "../assets/Images/ArrowSquare.svg";
 import HamburgerIcon from "../assets/Images/Hamburger.svg";
 import GridIcon from "../assets/Images/Grid.svg";
 
 const MobileAppHeader = () => {
-  const [viewMode, setViewMode] = useState("Board");
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const dispatch = useDispatch();
+  const filter = useSelector((state) => state.tasks.filter);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isDateOpen, setIsDateOpen] = useState(false);
   const selectedProject = useSelector((state) => state.tasks.selectedProject);
+
+  // Filter handling functions
+  const handlePriorityFilter = (priority) => {
+    dispatch(setFilter({ priority }));
+    setIsFilterOpen(false);
+  };
+
+  const handleDateFilter = (date) => {
+    dispatch(setFilter({ dueDate: date }));
+    setIsDateOpen(false);
+  };
 
   const toggleViewMode = () => {
     setViewMode(viewMode === "Board" ? "List" : "Board");
@@ -65,23 +79,50 @@ const MobileAppHeader = () => {
 
       {/* Lower Action Bar */}
       <div className="flex flex-wrap md:flex-nowrap items-center justify-between px-4 md:px-6 py-3 md:py-4 border-t border-gray-100 gap-3 md:gap-0">
-        {/* Left Side - Filter and Today */}
         <div className="flex items-center gap-2 order-1 md:order-none w-full md:w-auto">
-          <button className="flex-1 md:flex-none flex items-center justify-center gap-1 md:gap-2 text-xs md:text-sm text-gray-700 border border-gray-300 px-2 md:px-3 py-2 rounded-md hover:bg-gray-50 font-medium">
-            <Filter size={14} className="shrink-0" />
-            <span>Filter</span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="hidden md:block text-gray-500">
-              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+          {/* Priority Filter Button */}
+          <div className="relative">
+            <button 
+              onClick={() => setIsFilterOpen(!isFilterOpen)}
+              className={`flex-1 md:flex-none flex items-center justify-center gap-1 md:gap-2 text-xs md:text-sm text-gray-700 border border-gray-300 px-2 md:px-3 py-2 rounded-md hover:bg-gray-50 font-medium ${filter.priority ? 'bg-indigo-50 border-indigo-200' : ''}`}
+            >
+              <Filter size={14} className="shrink-0" />
+              <span>{filter.priority || 'Filter'}</span>
+            </button>
 
-          <button className="flex-1 md:flex-none flex items-center justify-center gap-1 md:gap-2 text-xs md:text-sm text-gray-700 border border-gray-300 px-2 md:px-3 py-2 rounded-md hover:bg-gray-50 font-medium">
-            <Calendar size={14} className="shrink-0" />
-            <span>Today</span>
-            <svg width="12" height="12" viewBox="0 0 12 12" fill="none" className="hidden md:block text-gray-500">
-              <path d="M3 4.5L6 7.5L9 4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
-          </button>
+            {/* Priority Filter Dropdown */}
+            {isFilterOpen && (
+              <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border z-50">
+                <div className="py-1">
+                  <button onClick={() => handlePriorityFilter('Low')} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Low</button>
+                  <button onClick={() => handlePriorityFilter('Medium')} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Medium</button>
+                  <button onClick={() => handlePriorityFilter('High')} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">High</button>
+                  <button onClick={() => dispatch(clearFilter())} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Clear Filter</button>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Date Filter Button */}
+          <div className="relative">
+            <button 
+              onClick={() => setIsDateOpen(!isDateOpen)}
+              className={`flex-1 md:flex-none flex items-center justify-center gap-1 md:gap-2 text-xs md:text-sm text-gray-700 border border-gray-300 px-2 md:px-3 py-2 rounded-md hover:bg-gray-50 font-medium ${filter.dueDate ? 'bg-indigo-50 border-indigo-200' : ''}`}
+            >
+              <Calendar size={14} className="shrink-0" />
+              <span>{filter.dueDate || 'Today'}</span>
+            </button>
+
+            {/* Date Filter Dropdown */}
+            {isDateOpen && (
+              <div className="absolute top-full left-0 mt-1 w-48 bg-white rounded-md shadow-lg border z-50">
+                <div className="py-1">
+                  <button onClick={() => handleDateFilter('Today')} className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-100">Today</button>
+                  <button onClick={() => dispatch(clearFilter())} className="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Clear Filter</button>
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         {/* Right Side - Other Action Buttons */}
