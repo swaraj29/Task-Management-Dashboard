@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useDispatch, useSelector } from "react-redux"; // Import Redux hooks
 import { setSelectedProject } from "../redux/tasksSlice"; // Import the action
 import HomeIcon from "../assets/Images/Home.svg";
@@ -14,6 +14,7 @@ import LightIcon from "../assets/Images/Light.svg";
 const Sidebar = () => {
   const dispatch = useDispatch();
   const selectedProject = useSelector((state) => state.tasks.selectedProject); // Get selected project from Redux
+  const [isMobileOpen, setIsMobileOpen] = useState(false); // State for mobile menu
 
   // Handler to update the selected project
   const handleProjectClick = (projectLabel) => {
@@ -21,103 +22,147 @@ const Sidebar = () => {
   };
 
   return (
-    <div className="w-64 h-screen bg-white p-6 flex flex-col justify-between shadow border-r">
-      <div>
-        {/* Project M Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-2">
-            <img src={ColorFilterIcon} alt="Project Icon" width={24} height={24} />
-            <h1 className="font-bold text-lg text-gray-900">Project M.</h1>
-          </div>
-          <button className="text-gray-400">
-            <img src={ArrowIcon} alt="Collapse" width={24} height={24} className="rotate-180" />
-          </button>
-        </div>
+    <>
+      {/* Mobile Only: Toggle Button */}
+      <button
+        className="fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow md:hidden"
+        onClick={() => setIsMobileOpen(!isMobileOpen)}
+      >
+        <img src={ArrowIcon} alt="Toggle Menu" className="w-6 h-6" />
+      </button>
 
-        {/* Main Menu */}
-        <nav className="space-y-4">
-          <MenuItem
-            icon={<img src={HomeIcon} alt="Home" width={18} height={18} />}
-            label="Home"
-          />
-          <MenuItem
-            icon={<img src={MessageIcon} alt="Messages" width={18} height={18} />}
-            label="Messages"
-          />
-          <MenuItem
-            icon={<img src={TasksIcon} alt="Tasks" width={18} height={18} />}
-            label="Tasks"
-          />
-          <MenuItem
-            icon={<img src={MembersIcon} alt="Members" width={18} height={18} />}
-            label="Members"
-          />
-          <MenuItem
-            icon={<img src={SettingIcon} alt="Settings" width={18} height={18} />}
-            label="Settings"
-          />
-        </nav>
-
-        {/* Projects List */}
-        <div className="mt-10">
-          <div className="flex items-center justify-between mb-3">
-            <h2 className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
-              My Projects
-            </h2>
-            <button className="text-lg font-medium text-gray-400">+</button>
-          </div>
-
-          <div className="space-y-3">
-            <ProjectItem
-              color="bg-green-500"
-              label="Mobile App"
-              active={selectedProject === "Mobile App"} // Dynamically set active
-              onClick={() => handleProjectClick("Mobile App")} // Dispatch on click
-            />
-            <ProjectItem
-              color="bg-orange-500"
-              label="Website Redesign"
-              active={selectedProject === "Website Redesign"}
-              onClick={() => handleProjectClick("Website Redesign")}
-            />
-            <ProjectItem
-              color="bg-purple-300"
-              label="Design System"
-              active={selectedProject === "Design System"}
-              onClick={() => handleProjectClick("Design System")}
-            />
-            <ProjectItem
-              color="bg-blue-500"
-              label="Wireframes"
-              active={selectedProject === "Wireframes"}
-              onClick={() => handleProjectClick("Wireframes")}
-            />
-          </div>
-        </div>
-      </div>
-
-      {/* Thoughts Time */}
-      <div className="mt-6 text-center relative w-full">
-        <div className="relative">
-          <img src={UnionIcon} alt="Background" className="w-full h-auto" />
-          <div className="absolute inset-0 p-4">
-            <div className="flex justify-center mb-3">
-              <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center">
-                <img src={LightIcon} alt="Ideas" width={20} height={20} />
-              </div>
+      {/* Main Sidebar - Modified only for mobile */}
+      <div
+        className={`
+    md:w-64 md:static md:transform-none
+    fixed top-0 left-0 z-50 
+    h-screen w-64
+    bg-white p-6 
+    flex flex-col justify-between 
+    shadow border-r
+    transform transition-transform duration-300
+    ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
+    md:translate-x-0
+  `}
+      >
+        <div>
+          {/* Project M Header */}
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-2">
+              <img
+                src={ColorFilterIcon}
+                alt="Project Icon"
+                width={24}
+                height={24}
+              />
+              <h1 className="font-bold text-lg text-gray-900">Project M.</h1>
             </div>
-            <h3 className="font-semibold text-gray-800 text-sm">Thoughts Time</h3>
-            <p className="text-xs text-gray-500 mt-1">
-              We don't have any notice for you, till then you can share your
-              thoughts with your peers.
-            </p>
-            <button className="mt-3 bg-white text-black font-semibold px-4 py-1 rounded border hover:shadow mx-auto block">
-              Write a message
+            {/* Mobile Only: Close button */}
+            <button
+              className="text-gray-400 md:hidden"
+              onClick={() => setIsMobileOpen(false)}
+            >
+              <img src={ArrowIcon} alt="Close" width={24} height={24} />
+            </button>
+            {/* Desktop Only: Original collapse button */}
+            <button className="text-gray-400 hidden md:block">
+              <img
+                src={ArrowIcon}
+                alt="Collapse"
+                width={24}
+                height={24}
+                className="rotate-180"
+              />
             </button>
           </div>
+
+          {/* Main Menu with bottom border */}
+          <nav className="space-y-4 pb-4 border-b border-gray-200">
+            <MenuItem
+              icon={<img src={HomeIcon} alt="Home" width={18} height={18} />}
+              label="Home"
+            />
+            <MenuItem
+              icon={<img src={MessageIcon} alt="Messages" width={18} height={18} />}
+              label="Messages"
+            />
+            <MenuItem
+              icon={<img src={TasksIcon} alt="Tasks" width={18} height={18} />}
+              label="Tasks"
+            />
+            <MenuItem
+              icon={<img src={MembersIcon} alt="Members" width={18} height={18} />}
+              label="Members"
+            />
+            <MenuItem
+              icon={<img src={SettingIcon} alt="Settings" width={18} height={18} />}
+              label="Settings"
+            />
+          </nav>
+
+          {/* Projects List */}
+          <div className="mt-10">
+            <div className="flex items-center justify-between mb-3">
+              <h2 className="text-xs font-semibold text-gray-500 tracking-wide uppercase">
+                My Projects
+              </h2>
+              <button className="text-lg font-medium text-gray-400">+</button>
+            </div>
+
+            <div className="space-y-3">
+              <ProjectItem
+                color="bg-green-500"
+                label="Mobile App"
+                active={selectedProject === "Mobile App"} // Dynamically set active
+                onClick={() => handleProjectClick("Mobile App")} // Dispatch on click
+              />
+              <ProjectItem
+                color="bg-orange-500"
+                label="Website Redesign"
+                active={selectedProject === "Website Redesign"}
+                onClick={() => handleProjectClick("Website Redesign")}
+              />
+              <ProjectItem
+                color="bg-purple-300"
+                label="Design System"
+                active={selectedProject === "Design System"}
+                onClick={() => handleProjectClick("Design System")}
+              />
+              <ProjectItem
+                color="bg-blue-500"
+                label="Wireframes"
+                active={selectedProject === "Wireframes"}
+                onClick={() => handleProjectClick("Wireframes")}
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Thoughts Time with top border */}
+        <div className="mt-6 pt-6 border-t border-gray-200 text-center relative w-full">
+          <div className="relative">
+            <img src={UnionIcon} alt="Background" className="w-full h-auto" />
+            <div className="absolute inset-0 p-4">
+              <div className="flex justify-center mb-3">
+                <div className="w-8 h-8 bg-yellow-200 rounded-full flex items-center justify-center">
+                  <img src={LightIcon} alt="Ideas" width={20} height={20} />
+                </div>
+              </div>
+              <h3 className="font-semibold text-gray-800 text-sm">
+                Thoughts Time
+              </h3>
+              <p className="text-xs text-gray-500 mt-1">
+                We don't have any notice for you, till then you can share your
+                thoughts with your peers.
+              </p>
+              <button className="mt-3 bg-white text-black font-semibold px-4 py-1 rounded border hover:shadow mx-auto block">
+                Write a message
+              </button>
+            </div>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
