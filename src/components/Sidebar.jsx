@@ -8,7 +8,7 @@ import MembersIcon from "../assets/Images/Members.svg";
 import SettingIcon from "../assets/Images/Setting.svg";
 import ArrowIcon from "../assets/Images/Arrow.svg";
 import ColorFilterIcon from "../assets/Images/Colorfilter.svg";
-import UnionIcon from "../assets/Images/Union.svg";
+import UnionIcon from "../assets/Images/union.svg";
 import LightIcon from "../assets/Images/Light.svg";
 
 const Sidebar = () => {
